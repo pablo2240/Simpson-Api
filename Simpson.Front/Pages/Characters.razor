@@ -1,0 +1,275 @@
+﻿@page "/characters"
+@using Simpson.Front.Models
+@using Simpson.Front.Services
+@inject ISimpsonService SimpsonService
+
+<PageTitle>Personajes de Los Simpson</PageTitle>
+
+<div class="container">
+    <h1 class="text-center mb-4">Personajes de Los Simpson</h1>
+
+    @if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p>Cargando personajes...</p>
+        </div>
+    }
+    else if (errorMessage != null)
+    {
+        <div class="alert alert-danger text-center">
+            <h4>Error al cargar los personajes</h4>
+            <p>@errorMessage</p>
+            <button class="btn btn-primary" @onclick="(() => LoadCharacters())">Reintentar</button>
+        </div>
+    }
+    else if (apiResponse?.Results == null || !apiResponse.Results.Any())
+    {
+        <div class="alert alert-warning text-center">
+            No se encontraron personajes.
+            <button class="btn btn-outline-warning ms-2" @onclick="(() => LoadCharacters())">Reintentar</button>
+        </div>
+    }
+    else
+    {
+        <!-- Información de paginación -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Información de la API</h6>
+                        <p class="mb-1"><strong>Total personajes:</strong> @apiResponse.Count</p>
+                        <p class="mb-1"><strong>Página actual:</strong> @currentPage de @apiResponse.Pages</p>
+                        <p class="mb-0"><strong>Mostrando:</strong> @apiResponse.Results.Count personajes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">Controles</h6>
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-outline-primary" @onclick="(() => PreviousPage())"
+                                    disabled="@(string.IsNullOrEmpty(apiResponse.Previous))">
+                                <i class="fas fa-chevron-left"></i> Anterior
+                            </button>
+                            <button class="btn btn-outline-primary" @onclick="(() => NextPage())"
+                                    disabled="@(string.IsNullOrEmpty(apiResponse.Next))">
+                                Siguiente <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid de personajes -->
+        <div class="row">
+            @foreach (var character in apiResponse.Results)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-container">
+                            @if (!string.IsNullOrEmpty(character.ImageUrl))
+                            {
+                                <img src="@character.ImageUrl"
+                                     class="card-img-top character-image"
+                                     alt="@(character.Name ?? "Personaje")"
+                                     loading="lazy"
+                                     onerror="this.onerror=null; this.src='https://via.placeholder.com/300x400/FFD90F/000000?text=@Uri.EscapeDataString(character.Name ?? "Sin imagen")'">
+                            }
+                            else
+                            {
+                                <div class="no-image-placeholder">
+                                    <i class="fas fa-user fa-3x text-muted"></i>
+                                    <p class="mt-2 text-muted">Sin imagen</p>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">@(character.Name ?? "Nombre no disponible")</h5>
+
+                            <div class="character-info">
+                                @if (character.Age.HasValue && character.Age > 0)
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas fa-birthday-cake text-primary"></i>
+                                        <strong>Edad:</strong> @character.Age años
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(character.Birthdate))
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas fa-calendar text-primary"></i>
+                                        <strong>Nacimiento:</strong> @FormatBirthdate(character.Birthdate)
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(character.Gender))
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas @(character.Gender.ToLower() == "male" ? "fa-mars" : "fa-venus") text-primary"></i>
+                                        <strong>Género:</strong> @character.Gender
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(character.Occupation))
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas fa-briefcase text-primary"></i>
+                                        <strong>Ocupación:</strong> @character.Occupation
+                                    </p>
+                                }
+
+                                @if (!string.IsNullOrEmpty(character.Status))
+                                {
+                                    <p class="mb-1">
+                                        <i class="fas fa-heart text-primary"></i>
+                                        <strong>Estado:</strong>
+                                        <span class="badge @(character.Status.ToLower() == "alive" ? "bg-success" : "bg-secondary")">
+                                            @character.Status
+                                        </span>
+                                    </p>
+                                }
+                            </div>
+
+                            @if (character.Phrases?.Any() == true)
+                            {
+                                <div class="phrases-section mt-3">
+                                    <h6 class="text-muted">
+                                        <i class="fas fa-comment"></i> Frases famosas:
+                                    </h6>
+                                    <div class="phrases-container">
+                                        @foreach (var phrase in character.Phrases.Take(3))
+                                        {
+                                            <span class="phrase-badge">"@phrase"</span>
+                                        }
+                                        @if (character.Phrases.Count > 3)
+                                        {
+                                            <small class="text-muted">y @(character.Phrases.Count - 3) más...</small>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-footer bg-transparent">
+                            <small class="text-muted">ID: @character.Id</small>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Paginación inferior -->
+        @if (apiResponse.Pages > 1)
+        {
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav aria-label="Paginación de personajes">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item @(string.IsNullOrEmpty(apiResponse.Previous) ? "disabled" : "")">
+                                <a class="page-link" href="#" @onclick="(() => PreviousPage())" @onclick:preventDefault>Anterior</a>
+                            </li>
+
+                            @for (int i = 1; i <= Math.Min(apiResponse.Pages, 10); i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="#" @onclick="(() => GoToPage(i))" @onclick:preventDefault>@i</a>
+                                </li>
+                            }
+
+                            @if (apiResponse.Pages > 10)
+                            {
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            }
+
+                            <li class="page-item @(string.IsNullOrEmpty(apiResponse.Next) ? "disabled" : "")">
+                                <a class="page-link" href="#" @onclick="(() => NextPage())" @onclick:preventDefault>Siguiente</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private ApiResponse? apiResponse;
+    private bool isLoading = true;
+    private string? errorMessage = null;
+    private int currentPage = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCharacters();
+    }
+
+    private async Task LoadCharacters(int page = 1)
+    {
+        isLoading = true;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            apiResponse = await SimpsonService.GetCharactersAsync(page);
+
+            if (apiResponse?.Results == null || !apiResponse.Results.Any())
+            {
+                errorMessage = "No se pudieron cargar los personajes. La API puede estar temporalmente no disponible.";
+            }
+            else
+            {
+                currentPage = page;
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Error al cargar los personajes: {ex.Message}";
+            apiResponse = null;
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if (!string.IsNullOrEmpty(apiResponse?.Next))
+        {
+            await LoadCharacters(currentPage + 1);
+        }
+    }
+
+    private async Task PreviousPage()
+    {
+        if (!string.IsNullOrEmpty(apiResponse?.Previous) && currentPage > 1)
+        {
+            await LoadCharacters(currentPage - 1);
+        }
+    }
+
+    private async Task GoToPage(int page)
+    {
+        await LoadCharacters(page);
+    }
+
+    private string FormatBirthdate(string birthdate)
+    {
+        if (DateTime.TryParse(birthdate, out var date))
+        {
+            return date.ToString("dd/MM/yyyy");
+        }
+        return birthdate;
+    }
+}
