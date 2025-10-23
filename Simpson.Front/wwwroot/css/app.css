@@ -18,16 +18,272 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Container principal */
-.container {
-    background: rgba(10, 17, 40, 0.7);
+/* NavMenu Cibernético - Tema Simpson */
+.top-row {
+    background: linear-gradient(135deg, #1a237e 0%, #0a1128 50%, #1a237e 100%);
+    border-bottom: 3px solid #ffd700;
+    box-shadow: 0 2px 20px rgba(255, 215, 0, 0.3);
+    height: 70px;
+}
+
+.navbar-brand {
+    color: #ffd700 !important;
+    font-weight: 800;
+    font-size: 1.8rem;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 3px;
+    background: linear-gradient(45deg, #ffd700, #ffeb3b, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    transition: all 0.3s ease;
+}
+
+    .navbar-brand:hover {
+        text-shadow: 0 0 20px rgba(255, 215, 0, 1);
+        transform: scale(1.05);
+    }
+
+.navbar-toggler {
+    background: rgba(41, 98, 255, 0.2);
+    border: 2px solid #ffd700;
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    transition: all 0.3s ease;
+}
+
+    .navbar-toggler:hover {
+        background: rgba(255, 215, 0, 0.2);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        transform: scale(1.1);
+    }
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 215, 0, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='3' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    width: 1.5em;
+    height: 1.5em;
+}
+
+/* Menú lateral desplegable */
+.nav-scrollable {
+    background: linear-gradient(180deg, #0a1128 0%, #1a237e 50%, #0a1128 100%);
+    border-right: 2px solid #ffd700;
+    box-shadow: 5px 0 25px rgba(255, 215, 0, 0.2);
     backdrop-filter: blur(10px);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-top: 2rem;
-    margin-bottom: 2rem;
-    border: 1px solid rgba(41, 98, 255, 0.3);
-    box-shadow: 0 0 30px rgba(41, 98, 255, 0.2);
+}
+
+    .nav-scrollable nav {
+        padding: 1rem 0;
+    }
+
+/* Items de navegación - Estilo cibernético */
+.nav-item {
+    margin: 0.5rem 1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, rgba(26, 35, 126, 0.8), rgba(10, 17, 40, 0.9));
+    border: 2px solid transparent;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+    .nav-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 8px;
+        padding: 2px;
+        background: linear-gradient(45deg, #2962ff, #ffd700, #2962ff);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+    }
+
+    .nav-item:hover {
+        transform: translateX(5px) scale(1.02);
+        box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+    }
+
+        .nav-item:hover::before {
+            opacity: 1;
+            background: linear-gradient(45deg, #2962ff, #ffd700, #ffeb3b, #ffd700, #2962ff);
+            background-size: 400% 400%;
+            animation: border-glow 2s ease infinite;
+        }
+
+/* Enlaces de navegación */
+/* Uniformar y centrar iconos del NavMenu */
+.nav-link {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.8rem !important;
+    padding: 1rem 1.5rem !important;
+    min-height: 60px !important;
+}
+
+    /* Iconos Bootstrap Icons */
+    .nav-link .bi {
+        font-size: 1.4rem !important;
+        width: 24px !important;
+        height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.8)) !important;
+        transition: all 0.3s ease !important;
+        line-height: 1 !important;
+    }
+
+
+    .nav-link:hover {
+        color: #000 !important;
+        background: linear-gradient(135deg, #2962ff, #ffd700);
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        transform: scale(1.05);
+    }
+
+    /* Enlace activo */
+    .nav-link.active {
+        background: linear-gradient(135deg, #2962ff, #ffd700) !important;
+        color: #000 !important;
+        font-weight: 700;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #2962ff, #ffd700, #ffeb3b);
+            border-radius: 10px;
+            z-index: -1;
+            animation: border-glow 2s ease infinite;
+        }
+
+/* Efecto de scanline cibernético */
+.nav-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffeb3b, transparent);
+    animation: scanline 3s linear infinite;
+}
+
+@keyframes scanline {
+    0% {
+        left: -100%;
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        left: 100%;
+        opacity: 0;
+    }
+}
+
+/* Animación de pulso para items activos */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    100% {
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+    }
+}
+
+.nav-link.active {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Efecto de partículas digitales */
+.nav-item:hover .nav-link::before {
+    content: '>';
+    position: absolute;
+    right: 15px;
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 1.2rem;
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+
+    51%, 100% {
+        opacity: 0;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .nav-scrollable {
+        border-right: none;
+        border-top: 2px solid #ffd700;
+    }
+
+    .nav-item {
+        margin: 0.3rem 0.5rem;
+        min-height: 55px;
+    }
+
+    .nav-link {
+        padding: 0.8rem 1rem !important;
+        font-size: 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+}
+
+/* Container fluid */
+.container-fluid {
+    padding: 0 1.5rem;
+}
+
+/* Efecto de carga del menú */
+.nav-scrollable {
+    animation: menuSlide 0.3s ease-out;
+}
+
+@keyframes menuSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Título principal con efectos de brillo */
@@ -390,6 +646,8 @@ h1 {
     border-color: #f44336;
     color: #ff8a80;
 }
+
+
 
 /* Responsive */
 @media (max-width: 768px) {
